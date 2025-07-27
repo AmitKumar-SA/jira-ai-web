@@ -1,0 +1,393 @@
+/*
+  Jira AI Web - Styles
+  Author: Amit Kumar (akumar6@cvent.com)
+  For internal use only. Do NOT distribute or share this code.
+*/
+button:disabled, .btn:disabled {
+    background: #c5d3e0 !important;
+    color: #7a8ca3 !important;
+    cursor: not-allowed !important;
+    border: none;
+    opacity: 1;
+}
+input[readonly] {
+    background-color: #f0f4fa !important;
+    color: #888 !important;
+    cursor: not-allowed;
+}
+
+/* Checkbox styling */
+input[type="checkbox"] {
+    width: auto !important;
+    margin-bottom: 0 !important;
+    padding: 0 !important;
+    transform: scale(1.2);
+}
+
+/* Platform sections styling */
+#jiraSection, #githubSection {
+    border-left: 3px solid #e1e5e9;
+    padding-left: 12px;
+    margin-left: 8px;
+}
+
+#jiraSection {
+    border-left-color: #0078d4;
+}
+
+#githubSection {
+    border-left-color: #333;
+}
+.panel-row {
+    display: grid;
+    gap: 2.5rem;
+    align-items: start;
+    margin: 0 auto;
+    transition: max-width 0.3s cubic-bezier(.4,2,.6,1), grid-template-columns 0.3s cubic-bezier(.4,2,.6,1);
+    justify-items: center;
+    grid-template-columns: 1fr 1fr;
+    max-width: 1200px;
+    width: 100%;
+}
+/* Remove the dynamic-width and single-panel classes since we're always showing both panels */
+.panel-jira.hidden, .panel-platforms.hidden {
+    display: none !important;
+}
+/* Label info box for better visibility */
+.label-info-box {
+    display: flex;
+    align-items: flex-start;
+    background: #e6f2fb;
+    color: #005fa3;
+    border-left: 4px solid #0078d4;
+    border-radius: 4px;
+    padding: 8px 12px;
+    margin-top: 6px;
+    margin-bottom: 10px;
+    font-size: 0.98em;
+}
+.label-help-icon {
+    font-size: 1.2em;
+    margin-right: 8px;
+    margin-top: 1px;
+}
+.label-help-text {
+    flex: 1;
+}
+.app-version-flex {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    position: absolute;
+    top: 0;
+    right: 40px; /* leaves space for dev-darpan logo */
+    z-index: 1;
+}
+.app-version-right {
+    color: #888;
+    font-size: 0.92em;
+    letter-spacing: 1px;
+    font-weight: normal;
+    margin-top: 1.5rem; /* Align with panel top padding */
+}
+.center-heading {
+    justify-content: center !important;
+    text-align: center;
+}
+.center-heading h1 {
+    margin-right: 12px;
+}
+/* Heading row for title and version */
+.heading-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+.app-version-inline {
+    color: #888;
+    font-size: 0.92em;
+    margin-left: 18px;
+    letter-spacing: 1px;
+    font-weight: normal;
+}
+/* Help info for label */
+.label-help {
+    font-size: 1em;
+    color: #0078d4;
+    margin-left: 6px;
+    cursor: pointer;
+    vertical-align: middle;
+}
+/* App version styling */
+.app-version {
+    text-align: center;
+    color: #888;
+    font-size: 1.05em;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+/* Branding at top left */
+.branding-top-right {
+    position: absolute;
+    top: 18px;
+    right: 24px;
+    z-index: 10;
+}
+.settings-panel {
+    position: fixed;
+    top: 18px;
+    left: 0;
+    width: 220px;
+    background: #f4f6fb;
+    border-radius: 0 10px 10px 0;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.06);
+    z-index: 20;
+    padding-bottom: 10px;
+}
+.settings-header {
+    font-weight: bold;
+    background: #0078d4;
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 0 10px 0 0;
+    cursor: pointer;
+    user-select: none;
+}
+.settings-content {
+    padding: 12px 16px 8px 16px;
+}
+.settings-content label {
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 2px;
+    color: #2d3e50;
+    font-size: 0.97em;
+}
+.settings-content input[type="text"],
+.settings-content input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    margin-bottom: 12px;
+}
+
+#storyDesc {
+    min-height: 140px;
+    resize: vertical;
+    font-size: 1em;
+}
+.branding-bottom {
+    position: fixed;
+    left: 24px;
+    bottom: 18px;
+    z-index: 10;
+}
+.logo {
+    height: 40px;
+}
+.dev-darpan-logo {
+    height: 60px;
+}
+.container {
+    margin-top: 60px;
+    position: relative;
+}
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6fb;
+    margin: 0;
+    padding: 0;
+}
+h1 {
+    text-align: center;
+    color: #2d3e50;
+}
+label {
+    display: block;
+    margin-top: 18px;
+    margin-bottom: 6px;
+    color: #2d3e50;
+}
+textarea, input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    margin-bottom: 12px;
+    font-size: 1em;
+}
+button {
+    background: #0078d4;
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    margin-top: 10px;
+}
+button:hover {
+    background: #005fa3;
+}
+#status {
+    margin-top: 18px;
+    text-align: center;
+    color: #0078d4;
+    font-weight: bold;
+}
+
+/* Story Quality Checklist Styles */
+.checklist-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 4px 0;
+    line-height: 1.4;
+}
+
+.check-icon {
+    margin-right: 8px;
+    margin-top: 1px;
+    font-size: 1.1em;
+    min-width: 20px;
+    text-align: center;
+}
+
+.check-text {
+    flex: 1;
+    color: #333;
+}
+
+.check-pass {
+    color: #28a745;
+}
+
+.check-fail {
+    color: #dc3545;
+}
+
+/* Quality Indicator Styles */
+.quality-excellent {
+    background: #d4edda !important;
+    border-color: #c3e6cb !important;
+    color: #155724;
+}
+
+.quality-good {
+    background: #fff3cd !important;
+    border-color: #ffeaa7 !important;
+    color: #856404;
+}
+
+.quality-needs-improvement {
+    background: #f8d7da !important;
+    border-color: #f5c6cb !important;
+    color: #721c24;
+}
+
+.quality-score {
+    font-weight: bold;
+    font-size: 1.1em;
+    margin-bottom: 4px;
+}
+
+.quality-message {
+    font-size: 0.95em;
+    margin: 0;
+}
+
+/* Modal Styles */
+.modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background-color: #fff;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #dee2e6;
+    background: #fff3cd;
+    border-radius: 12px 12px 0 0;
+}
+
+.modal-close {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #856404;
+    cursor: pointer;
+    line-height: 1;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.modal-close:hover {
+    background-color: rgba(133, 100, 4, 0.1);
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+/* Quality indicator hover effect */
+#qualityIndicator:hover {
+    background-color: #e9ecef !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Re-evaluate button styles */
+#reEvaluateBtn {
+    transition: all 0.2s ease;
+    font-size: 0.95em;
+    white-space: nowrap;
+}
+
+#reEvaluateBtn:hover:not(:disabled) {
+    background: #5a6268 !important;
+    transform: translateY(-1px);
+}
+
+#reEvaluateBtn:disabled {
+    background: #c5d3e0 !important;
+    color: #7a8ca3 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+}

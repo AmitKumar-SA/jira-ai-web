@@ -1,0 +1,344 @@
+<!--
+  Jira AI Web - Main UI
+  Author: Amit Kumar (akumar6@cvent.com)
+  For internal use only. Do NOT distribute or share this code.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jira AI</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="branding-top-right">
+        <a href="https://wiki.cvent.com/x/moJmNg" target="_blank" rel="noopener">
+            <img src="./dev-darpan-logo.png" alt="dev-darpan logo" class="dev-darpan-logo">
+        </a>
+    </div>
+    <!-- Hamburger menu toggle for settings (top left) -->
+    <button class="btn" id="settingsToggleBtn" type="button" style="position:absolute;top:0.7rem;left:0.7rem;z-index:1001;font-size:1.3em;padding:0.1em 0.4em;line-height:1;width:36px;height:36px;">☰</button>
+    <!-- Slide-out Settings panel -->
+    <div id="settingsPanel" style="position:fixed;top:0;left:0;width:340px;max-width:95vw;height:100vh;background:#fff;border-right:1px solid #ced4da;box-shadow:2px 0 8px rgba(0,0,0,0.08);padding:1.2rem 1.2rem 1.2rem 1.2rem;display:none;overflow:auto;z-index:1002;">
+        <h2 style="margin-top:0;">Settings</h2>
+        <label for="azureKey">Azure API Key:</label>
+        <input type="password" id="azureKey" placeholder="Enter Azure API Key" style="width:100%;margin-bottom:0.75rem;">
+        <label for="jiraToken">Jira Auth Token:</label>
+        <input type="password" id="jiraToken" placeholder="Enter Jira API Token" style="width:100%;margin-bottom:0.75rem;">
+        <label for="githubToken">GitHub Personal Access Token:</label>
+        <input type="password" id="githubToken" placeholder="Enter GitHub PAT" style="width:100%;margin-bottom:0.75rem;">
+        <div style="font-size:0.97em;color:#555;margin-bottom:8px;">
+            <b>Jira Setup:</b> Generate a Personal Access Token from <a href="https://jira.cvent.com/secure/ViewProfile.jspa" target="_blank" rel="noopener">Jira Settings</a>.<br>
+            <br>
+            <b>GitHub Setup:</b> Generate a Personal Access Token from <a href="https://github.com/settings/tokens" target="_blank" rel="noopener">GitHub Settings</a> with 'repo' permissions to create issues. You also need to authorize the Github organization using "Configure SSO" link.<br>
+            <br>
+            <b>Backend setup required:</b> Download the backend proxy file (<a href="backend-proxy.js" download>backend-proxy.js</a>) and run <code>node backend-proxy.js</code> after installing Node.js and dependencies with <code>npm install express cors dotenv</code>.
+        </div>
+        <button class="btn" id="closeSettingsBtn" style="margin-top:1rem;">Close</button>
+    </div>
+    <div class="branding-bottom">
+        <img src="./Cvent_logo.png" alt="Cvent Logo" class="logo" style="height:64px;max-width:220px;width:auto;">
+    </div>
+
+    <!-- Feedback Modal Trigger -->
+    <div id="feedback-footer" style="position:fixed;right:32px;bottom:24px;z-index:1003;">
+      <button id="openFeedbackBtn" style="background:#0078d4;color:#fff;border:none;border-radius:60%;width:50px;height:50px;font-size:1.7em;box-shadow:0 2px 8px rgba(0,0,0,0.10);cursor:pointer;">💬</button>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div id="feedbackModal" style="display:none;position:fixed;right:32px;bottom:80px;width:340px;max-width:95vw;background:#fff;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.18);padding:1.2rem 1.2rem 1rem 1.2rem;z-index:1004;">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <h3 style="margin:0;font-size:1.15em;">Share Feedback</h3>
+        <button id="closeFeedbackBtn" style="background:none;border:none;font-size:1.5em;line-height:1;cursor:pointer;color:#888;">&times;</button>
+      </div>
+      <div style="margin-top:0.7em;display:flex;">
+        <textarea id="feedbackText" rows="4" placeholder="Your feedback..." style="width:100%;border:1px solid #d1d5db;border-radius:4px;resize:vertical;"></textarea>
+      </div>
+      <div style="margin-top:0.1em;display:flex;gap:6px;">
+        <button id="sendSlackBtn" style="flex:1;background:#4A154B;color:#fff;border:none;padding:8px 0;border-radius:4px;cursor:pointer;">Slack</button>
+      </div>
+      <div style="margin-top:0.5em;font-size:0.97em;color:#666;text-align:center;">
+        After Slack opens, <b>paste</b> your feedback with <b>Ctrl+V</b> (Windows) or <b>Cmd+V</b> (Mac) and send.
+      </div>
+      <div id="feedbackStatus" style="margin-top:0.7em;font-size:0.98em;color:#0078d4;"></div>
+    </div>
+    <div class="container" style="background-color:white;padding:2rem;border-radius:12px;margin:2rem auto;max-width:1150px;box-shadow:0 4px 16px rgba(0,0,0,0.08);">
+        <div class="heading-row center-heading" style="display:flex;align-items:center;justify-content:center;gap:14px;">
+            <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/jirasoftware.svg" alt="Jira AI Logo" style="height:38px;width:38px;vertical-align:middle;filter:drop-shadow(0 2px 4px rgba(187, 17, 5, 0.947));">
+            <h1>Jira AI</h1>
+        </div>
+        <div class="app-version-flex">
+            <span class="app-version-right">Version 1.1</span>
+        </div>
+          <div class="panel-row">
+            <div class="panel panel-story" style="min-width:500px;max-width:750px;background:#f8f9fa;border-radius:12px;padding:1.5rem 1.2rem 1.2rem 1.2rem;box-shadow:0 2px 8px rgba(0,0,0,0.06);border:1.5px solid #bfc9d1;">
+                <form id="taskForm" style="padding-right: 10px">
+                    <h2 style="margin-top:0;">1. Generate Story</h2>
+                    <label for="taskDesc">Task Description:</label>
+                    <textarea id="taskDesc" rows="4" required></textarea>
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <button type="button" id="generateBtn" style="flex: 1;">Generate Story</button>
+                        <button type="button" id="reEvaluateBtn" style="flex: 0 0 auto; background: #6c757d; padding: 10px 16px;" disabled title="Re-evaluate story quality after making changes">Re-evaluate</button>
+                    </div>
+                </form>
+                <div id="storySection" style="display:none;">
+                    <h3>Generated Story</h3>
+                    
+                    <!-- Story Quality Indicator (clickable) -->
+                    <div id="qualityIndicator" style="background:#f8f9fa;border:1px solid #dee2e6;border-radius:8px;padding:0.75rem;margin-bottom:1rem;cursor:pointer;transition:background-color 0.2s;" onclick="showChecklistModal()" title="Click to view detailed checklist">
+                        <!-- Quality indicator will be populated by JavaScript -->
+                    </div>
+                    
+                    <label for="storyTitle">Story Title:</label>
+                    <div style="display:flex;align-items:center;gap:6px;">
+                        <input type="text" id="storyTitle" style="flex:1;">
+                        <span id="copyTitleBtn" title="Copy Story Title" style="cursor:pointer;display:flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="5" y="3" width="9" height="13" rx="2" stroke="#444" stroke-width="1.5" fill="#fff"/><rect x="8" y="6" width="9" height="13" rx="2" stroke="#888" stroke-width="1.2" fill="#fff"/></svg></span>
+                    </div>
+                    <label for="storyDesc">Story Description:</label>
+                    <div style="display:flex;align-items:center;gap:6px;">
+                        <textarea id="storyDesc" rows="12" style="flex:1;"></textarea>
+                        <span id="copyDescBtn" title="Copy Story Description" style="cursor:pointer;align-self:flex-start;display:flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="5" y="3" width="9" height="13" rx="2" stroke="#444" stroke-width="1.5" fill="#fff"/><rect x="8" y="6" width="9" height="13" rx="2" stroke="#888" stroke-width="1.2" fill="#fff"/></svg></span>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-platforms" style="min-width:500px;max-width:750px;background:#f8f9fa;border-radius:12px;padding:1.5rem 1.2rem 1.2rem 1.2rem;box-shadow:0 2px 8px rgba(0,0,0,0.06);border:1.5px solid #bfc9d1;">
+                <h2 style="margin-top:0;">2. Create Issues</h2>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:flex;align-items:center;margin-bottom:0.5rem;cursor:pointer;">
+                        <input type="checkbox" id="createJira" style="margin-right:8px;" checked>
+                        Create Jira Issue
+                    </label>
+                    <label style="display:flex;align-items:center;margin-bottom:1rem;cursor:pointer;">
+                        <input type="checkbox" id="createGithub" style="margin-right:8px;">
+                        Create GitHub Issue
+                    </label>
+                </div>
+                
+                <!-- Common Label Section -->
+                <div style="margin-bottom:1rem;padding:0.75rem;background:#f0f8ff;border-radius:8px;border:1px solid #d0e7ff;">
+                    <label for="label">Label (applies to both platforms):</label>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <input type="text" id="label" value="JiraAI" style="max-width:7ch;" required readonly>
+                      <div class="label-info-box">
+                        <span class="label-help-icon">ℹ️</span>
+                        <span class="label-help-text">Don't remove from created issues.</span>
+                      </div>
+                    </div>
+                </div>
+                
+                <!-- Jira Section -->
+                <div id="jiraSection">
+                    <h3 style="margin-bottom:0.5rem;color:#0078d4;">Jira Details</h3>
+                    <div style="display:flex;gap:1rem;align-items:flex-start;">
+                        <div style="flex:1;">
+                            <label for="project">Project:</label>
+                            <input type="text" id="project" value="SMM" style="max-width:7ch;" required>
+                        </div>
+                        <div style="flex:1;">
+                            <label for="issueType">Issue Type:</label>
+                            <select id="issueType" style="width:80px;height:40px;padding:4px;box-sizing:border-box;font-size:16px;border:1px solid #d1d5db;border-radius:4px;" required>
+                                <option value="Story" selected>Story</option>
+                                <option value="Bug">Bug</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- GitHub Section -->
+                <div id="githubSection" style="display:none;margin-top:1rem;">
+                    <h3 style="margin-bottom:0.5rem;color:#333;">GitHub Details</h3>
+                    <label for="githubRepoLocal">GitHub Repository:</label>
+                    <input type="text" id="githubRepoLocal" placeholder="owner/repo (e.g., username/project)" style="width:calc(100% - 0.5rem);max-width:100%;box-sizing:border-box;">
+                </div>
+                
+                <button type="button" id="submitIssuesBtn" disabled style="margin-top:1rem;">Create Issues</button>
+            </div>
+          </div>
+          <div id="status" style="margin-top:1.2rem;"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+    <script>
+    // Feedback Modal logic
+    document.addEventListener('DOMContentLoaded', function() {
+      var openBtn = document.getElementById('openFeedbackBtn');
+      var closeBtn = document.getElementById('closeFeedbackBtn');
+      var modal = document.getElementById('feedbackModal');
+      var feedbackText = document.getElementById('feedbackText');
+      var sendSlackBtn = document.getElementById('sendSlackBtn');
+      var feedbackStatus = document.getElementById('feedbackStatus');
+      if (openBtn && modal) {
+        openBtn.onclick = function() {
+          modal.style.display = 'block';
+          feedbackStatus.textContent = '';
+        };
+      }
+      if (closeBtn && modal) {
+        closeBtn.onclick = function() {
+          modal.style.display = 'none';
+        };
+      }
+      // Slack feedback
+      if (sendSlackBtn && feedbackText) {
+        sendSlackBtn.onclick = function() {
+          var msg = encodeURIComponent(feedbackText.value.trim());
+          if (!msg) {
+            feedbackStatus.textContent = 'Please enter your feedback.';
+            return;
+          }
+          // Copy feedback to clipboard, then open Slack DM
+          if (navigator.clipboard) {
+            navigator.clipboard.writeText(feedbackText.value.trim()).then(function() {
+              var slackUrl = 'https://cvent.slack.com/archives/C096GQCH7RC';
+              window.open(slackUrl, '_blank');
+              feedbackStatus.textContent = 'Feedback copied! Slack window opened. Paste (Ctrl+V) to send.';
+            }, function() {
+              var slackUrl = 'https://cvent.slack.com/archives/C096GQCH7RC';
+              window.open(slackUrl, '_blank');
+              feedbackStatus.textContent = 'Slack window opened. Please paste your feedback.';
+            });
+          } else {
+            var slackUrl = 'https://cvent.slack.com/archives/C096GQCH7RC';
+            window.open(slackUrl, '_blank');
+            feedbackStatus.textContent = 'Slack window opened. Please paste your feedback.';
+          }
+        };
+      }
+    });
+    </script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var submitBtn = document.getElementById('submitIssuesBtn');
+        var storyTitle = document.getElementById('storyTitle');
+        var storyDesc = document.getElementById('storyDesc');
+        var storySection = document.getElementById('storySection');
+        var projectInput = document.getElementById('project');
+        var createJiraCheckbox = document.getElementById('createJira');
+        var createGithubCheckbox = document.getElementById('createGithub');
+        var jiraSection = document.getElementById('jiraSection');
+        var githubSection = document.getElementById('githubSection');
+        var githubRepoLocal = document.getElementById('githubRepoLocal');
+        
+        function updateBtnState() {
+            var visible = storySection && storySection.style.display !== 'none';
+            var titleFilled = storyTitle && storyTitle.value.trim().length > 0;
+            var descFilled = storyDesc && storyDesc.value.trim().length > 0;
+            var projectFilled = projectInput && projectInput.value.trim().length > 0;
+            var anyPlatformSelected = createJiraCheckbox.checked || createGithubCheckbox.checked;
+            
+            // Check GitHub repository from local field only
+            var githubRepoFilled = false;
+            if (createGithubCheckbox.checked) {
+                var localRepo = githubRepoLocal && githubRepoLocal.value.trim();
+                githubRepoFilled = localRepo && localRepo.includes('/');
+            }
+            
+            if (visible && titleFilled && descFilled && anyPlatformSelected && 
+                (!createJiraCheckbox.checked || projectFilled) &&
+                (!createGithubCheckbox.checked || githubRepoFilled)) {
+                submitBtn.disabled = false;
+            } else {
+                submitBtn.disabled = true;
+            }
+        }
+        
+        function toggleSections() {
+            if (createJiraCheckbox.checked) {
+                jiraSection.style.display = 'block';
+            } else {
+                jiraSection.style.display = 'none';
+            }
+            
+            if (createGithubCheckbox.checked) {
+                githubSection.style.display = 'block';
+            } else {
+                githubSection.style.display = 'none';
+            }
+            updateBtnState();
+        }
+        
+        if (storyTitle) storyTitle.addEventListener('input', updateBtnState);
+        if (storyDesc) storyDesc.addEventListener('input', updateBtnState);
+        if (projectInput) projectInput.addEventListener('input', updateBtnState);
+        if (githubRepoLocal) githubRepoLocal.addEventListener('input', updateBtnState);
+        if (createJiraCheckbox) createJiraCheckbox.addEventListener('change', toggleSections);
+        if (createGithubCheckbox) createGithubCheckbox.addEventListener('change', toggleSections);
+        
+        // Observe storySection visibility
+        if (storySection) {
+            const observer = new MutationObserver(updateBtnState);
+            observer.observe(storySection, { attributes: true, attributeFilter: ['style'] });
+        }
+        updateBtnState();
+        toggleSections(); // Initial setup
+    });
+    </script>
+    <script>
+    // Copy to clipboard logic for Story Title and Description
+    document.addEventListener('DOMContentLoaded', function() {
+        var copyTitleBtn = document.getElementById('copyTitleBtn');
+        var copyDescBtn = document.getElementById('copyDescBtn');
+        var storyTitle = document.getElementById('storyTitle');
+        var storyDesc = document.getElementById('storyDesc');
+        const copyIconSVG = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="5" y="3" width="9" height="13" rx="2" stroke="#444" stroke-width="1.5" fill="#fff"/><rect x="8" y="6" width="9" height="13" rx="2" stroke="#888" stroke-width="1.2" fill="#fff"/></svg>';
+        const tickIcon = '<span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;font-size:1.2em;">✅</span>';
+        // Both panels are always visible now, no need for show/hide logic
+        // Just keep the copy functionality
+        if (copyTitleBtn && storyTitle) {
+            copyTitleBtn.addEventListener('click', function() {
+                navigator.clipboard.writeText(storyTitle.value);
+                copyTitleBtn.innerHTML = tickIcon;
+                setTimeout(() => { copyTitleBtn.innerHTML = copyIconSVG; }, 1200);
+            });
+        }
+        if (copyDescBtn && storyDesc) {
+            copyDescBtn.addEventListener('click', function() {
+                navigator.clipboard.writeText(storyDesc.value);
+                copyDescBtn.innerHTML = tickIcon;
+                setTimeout(() => { copyDescBtn.innerHTML = copyIconSVG; }, 1200);
+            });
+        }
+    });
+    </script>
+    <script>
+    // Settings panel slide-out logic (reference: interactive_okr_evaluator.html)
+    document.addEventListener('DOMContentLoaded', function() {
+        var settingsPanel = document.getElementById('settingsPanel');
+        var settingsToggleBtn = document.getElementById('settingsToggleBtn');
+        var closeSettingsBtn = document.getElementById('closeSettingsBtn');
+        if (settingsToggleBtn && settingsPanel) {
+            settingsToggleBtn.addEventListener('click', function() {
+                settingsPanel.style.display = 'block';
+            });
+        }
+        if (closeSettingsBtn && settingsPanel) {
+            closeSettingsBtn.addEventListener('click', function() {
+                settingsPanel.style.display = 'none';
+            });
+        }
+        // Optional: close panel on outside click
+        document.addEventListener('mousedown', function(e) {
+            if (settingsPanel.style.display === 'block' && !settingsPanel.contains(e.target) && e.target !== settingsToggleBtn) {
+                settingsPanel.style.display = 'none';
+            }
+        });
+    });
+    </script>
+
+    <!-- Checklist Modal -->
+    <div id="checklistModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 style="margin:0;color:#856404;">📋 Development Readiness Checklist</h3>
+                <span class="modal-close" onclick="hideChecklistModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="storyChecklist" style="font-size:0.9em;">
+                    <!-- Checklist items will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
